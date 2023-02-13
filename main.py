@@ -5,8 +5,8 @@ levelSizeX = 30
 levelSizeY = 10
 level = []
 
-snakeX = 8
-snakeY = 9
+snakeX = 18
+snakeY = 3
 
 
 #colored print
@@ -66,7 +66,6 @@ def coloredtext(color, bgcolor, text):
     return textcolor + backgroundcolor + text + "\033[00m"
 
 
-
 def spawnsnake(x, y):
     snakeX = x
     snakeY = y
@@ -76,13 +75,11 @@ def draw():
     os.system('cls')
     for i in range(levelSizeY):
         line = ""
-        print("i_" + str(i))
         for i2 in range(levelSizeX):
-            if snakeY - 1 == i & snakeX - 1 == i2:
+            if snakeY-1 == i and snakeX-1 == i2:
                 line = line + coloredtext("GREEN", "BLACK", "s ")
             else:
                 line = line + level[i*levelSizeX + i2] + coloredtext("RED", "BLACK", " ")
-            print("i_" + str(i) + "   " + "i2_" + str(i2))
 
         print(line)
 
@@ -94,14 +91,12 @@ def placeapple():
 
 def initlevel():
     for i in range(levelSizeX * levelSizeY):
-        level.insert(1, coloredtext("WHITE", "BLACK", "□"))
+        level.insert(i, coloredtext("WHITE", "BLACK", "□"))
 
 
 initlevel()
 placeapple()
-spawnsnake(10, 5)
-print(snakeX)
-print(snakeY)
+# spawnsnake(10, 5)
 draw()
 
 print(coloredtext("GREEN", "BLACK","green"))
