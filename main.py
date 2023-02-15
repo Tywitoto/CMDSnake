@@ -13,11 +13,18 @@ running = False
 
 
 class Snake:
-    def __init__(self, sx, sy, slength, direction):
+    def __init__(self, sx, sy, slength):
         self.snakeX = sx
         self.snakeY = sy
         self.snakeLength = slength
-        self.snakeDir = direction
+        self.snakeDir = "right"
+        self.snakePartsX = []
+        self.snakePartsY = []
+
+class Apple:
+    def __init__(self, sx, sy):
+        self.appleX = sx
+        self.appleY = sy
 
 
 # colored print
@@ -84,15 +91,20 @@ def draw():
         for i2 in range(levelSizeX):
             if snake.snakeY - 1 == i and snake.snakeX - 1 == i2:
                 line = line + coloredtext("GREEN", "BLACK", "s ")
+            elif apple.appleX - 1 == i and apple.appleY - 1 == i2:
+                line = line + coloredtext("RED", "BLACK", "♦ ")
+
             else:
-                line = line + level[i * levelSizeX + i2] + coloredtext("RED", "BLACK", " ")
+                updated = False
+                for p in range(len(snake.snakePartsX)):
+                    if snake.snakePartsX[p] - 1 == i2 and snake.snakePartsY[p] - 1 == i:
+                        line = line + coloredtext("GREEN", "BLACK", "- ")
+                        updated = True
+                        break
+                if not updated:
+                    line = line + level[i * levelSizeX + i2] + coloredtext("RED", "BLACK", " ")
 
         print(line)
-
-
-def place_apple():
-    rand = random.randint(0, levelSizeX * levelSizeY - 1)
-    level[rand] = coloredtext("RED", "BLACK", "♦")
 
 
 def init_level():
@@ -100,26 +112,12 @@ def init_level():
         level.insert(i, coloredtext("WHITE", "BLACK", "□"))
 
 
+def add_snake_part():
+    snake.snakePartsX.append(snake.snakeX)
+    snake.snakePartsY.append(snake.snakeY)
 
 
-def main_game():
-
-    t_start = time.time()
-
-    while True:
-        t_now = time.time()
-        if keyboard.is_pressed("right"):
-            snake.snakeDir = "right"
-        elif keyboard.is_pressed("left"):
-            snake.snakeDir = "left"
-        elif keyboard.is_pressed("up"):
-            snake.snakeDir = "up"
-        elif keyboard.is_pressed("down"):
-            snake.snakeDir = "down"
-
-        if t_now - t_start >= speed:
-            break
-
+def move_snake():
     match snake.snakeDir:
         case "right":
             snake.snakeX += 1
@@ -130,19 +128,51 @@ def main_game():
         case "down":
             snake.snakeY += 1
 
+
+def get_inputs():
+    if keyboard.is_pressed("right"):
+        snake.snakeDir = "right"
+    elif keyboard.is_pressed("left"):
+        snake.snakeDir = "left"
+    elif keyboard.is_pressed("up"):
+        snake.snakeDir = "up"
+    elif keyboard.is_pressed("down"):
+        snake.snakeDir = "down"
+
+
+def main_game():
+    t_start = time.time()
+    while True:
+        t_now = time.time()
+        get_inputs()
+        if t_now - t_start >= speed:
+            break
+
+    add_snake_part()
+
+    if len(snake.snakePartsX) > snake.snakeLength:
+        snake.snakePartsX.pop(0)
+        snake.snakePartsY.pop(0)
+
+    if snake.snakeX == apple.appleX and snake.snakeY == apple.appleY:
+        apple.appleX = random.randint(0, levelSizeX - 1)
+        apple.appleY = random.randint(0, levelSizeY - 1)
+        snake.snakeLength += 1
+
+    move_snake()
+
     draw()
 
 
 # init lv
 init_level()
-place_apple()
+apple = Apple(5, 5)
 
 # init snake
-snake = Snake(5, 8, 1, "right")
+snake = Snake(5, 8, 3)
 draw()
 
 running = True
 
 while running:
-    # print(keyboard.is_pressed("a"))
     main_game()
