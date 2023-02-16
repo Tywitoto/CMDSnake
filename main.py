@@ -162,6 +162,7 @@ def main_game():
     move_snake()
 
     draw()
+    print("X : " + str(apple.appleX) + " | Y : " + str(apple.appleY))
 
 
 # init lv
